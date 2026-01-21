@@ -1,0 +1,509 @@
+import React, { useState } from 'react';
+import { ChevronDown, ChevronRight, Users, BarChart, Shield, Zap } from 'lucide-react';
+
+const PageFlowchart = () => {
+  const [selectedCategory, setSelectedCategory] = useState('landing');
+  const [selectedPage, setSelectedPage] = useState(null);
+
+  const pageData = {
+    landing: {
+      name: "🏠 Landing & Waitlist",
+      icon: "🌐",
+      pages: [
+        {
+          name: "Landing Page - Coming Soon",
+          path: "/",
+          fields: ["Email (required)", "Phone number (required)", "Instagram handle (required)", "Early access checkbox"],
+          components: ["Hero section", "Feature highlights grid", "Waitlist form", "How it works", "CTA buttons", "Footer"],
+          thirdPartyApis: [],
+          internalApis: ["POST /api/waitlist/register"],
+          ref: "Additional meeting notes"
+        }
+      ]
+    },
+    auth: {
+      name: "🔐 Authentication",
+      icon: "🔑",
+      pages: [
+        {
+          name: "Sign Up",
+          path: "/signup",
+          fields: ["Email", "Password", "Confirm password", "Role selection", "T&C checkbox"],
+          components: ["Email/password form", "Google OAuth button",  "Role toggle", "Password strength"],
+          thirdPartyApis: ["Google OAuth 2.0"],
+          internalApis: ["POST /api/auth/signup", "POST /api/auth/send-verification"],
+          ref: "User Registration Flow"
+        },
+        {
+          name: "Login",
+          path: "/login",
+          fields: ["Email", "Password", "Remember me"],
+          components: ["Login form", "OAuth buttons", "Forgot password link"],
+          thirdPartyApis: ["Google OAuth"],
+          internalApis: ["POST /api/auth/login", "POST /api/auth/refresh-token"],
+          ref: "Authentication & Users"
+        },
+        {
+          name: "Email Verification",
+          path: "/verify-email",
+          fields: ["6-digit OTP"],
+          components: ["OTP input boxes", "Resend button", "Timer"],
+          thirdPartyApis: [],
+          internalApis: ["POST /api/auth/verify-email", "POST /api/auth/resend-otp"],
+          ref: "Influencer Registration"
+        },
+        {
+          name: "Profile Setup",
+          path: "/setup-profile",
+          fields: ["Full name", "Username", "Bio", "Profile picture"],
+          components: ["Text inputs", "Image upload", "Progress indicator"],
+          thirdPartyApis: [],
+          internalApis: ["POST /api/users/profile", "POST /api/upload/profile-picture"],
+          ref: "Profile Setup"
+        },
+        {
+          name: "Connect Instagram",
+          path: "/connect/instagram",
+          fields: ["OAuth flow"],
+          components: ["Instagram branding", "Benefits list", "Connect button", "Account type notice"],
+          thirdPartyApis: ["Instagram Graph API - OAuth"],
+          internalApis: ["POST /api/social/instagram/callback", "GET /api/social/instagram/profile"],
+          ref: "Instagram Integration"
+        },
+        {
+          name: "Connect YouTube",
+          path: "/connect/youtube",
+          fields: ["OAuth flow"],
+          components: ["YouTube branding", "Benefits list", "Connect button"],
+          thirdPartyApis: ["Google OAuth", "YouTube Data API", "YouTube Analytics API"],
+          internalApis: ["POST /api/social/youtube/callback", "GET /api/social/youtube/profile"],
+          ref: "YouTube Integration"
+        }
+      ]
+    },
+    influencer: {
+      name: "💰 Influencer Dashboard",
+      icon: "👤",
+      pages: [
+        {
+          name: "Dashboard",
+          path: "/influencer/dashboard",
+          fields: [],
+          components: ["Stats cards (Earnings, Pending, Available)", "Recent submissions", "Active campaigns", "Earnings chart", "Notifications"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/influencer/dashboard", "GET /api/influencer/submissions/recent"],
+          ref: "Influencer Features"
+        },
+        {
+          name: "Browse Campaigns",
+          path: "/influencer/campaigns",
+          fields: ["Search", "Category filter", "Status filter", "Platform filter", "Sort by"],
+          components: ["Filter bar", "Campaign cards grid", "Pagination"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/campaigns/browse", "POST /api/campaigns/{id}/join"],
+          ref: "Browse campaigns"
+        },
+        {
+          name: "Campaign Details",
+          path: "/influencer/campaigns/:id",
+          fields: [],
+          components: ["Banner", "Title/description", "Pay rate", "Budget bar", "Guidelines", "Requirements", "Leaderboard", "Submit button"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/campaigns/{id}", "GET /api/campaigns/{id}/leaderboard"],
+          ref: "Campaign details"
+        },
+        {
+          name: "Submit Clip",
+          path: "/influencer/campaigns/:id/submit",
+          fields: ["Platform selection", "Reel/Shorts URL", "Guidelines checklist"],
+          components: ["Platform toggle", "URL input", "Video preview", "Checklist", "Submit button"],
+          thirdPartyApis: ["Instagram Graph API - Validate URL", "YouTube Data API - Validate URL"],
+          internalApis: ["POST /api/submissions/create", "POST /api/submissions/validate-url"],
+          ref: "Clip Submission Flow"
+        },
+        {
+          name: "My Submissions",
+          path: "/influencer/submissions",
+          fields: ["Status filter", "Campaign filter", "Date range"],
+          components: ["Filter bar", "Submissions table", "Status badges", "Views/earnings", "Pagination"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/influencer/submissions", "GET /api/submissions/{id}/stats"],
+          ref: "My submissions"
+        },
+        {
+          name: "Wallet",
+          path: "/influencer/wallet",
+          fields: [],
+          components: ["Balance cards (Pending/Available/Withdrawn/Blocked)", "Withdrawal button", "Transaction history", "Download statement"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/influencer/wallet", "GET /api/influencer/transactions"],
+          ref: "Wallet, Earnings"
+        },
+        {
+          name: "Request Withdrawal",
+          path: "/influencer/wallet/withdraw",
+          fields: ["Amount (min ₹1000)", "UPI ID", "OTP"],
+          components: ["Balance display", "Amount input", "UPI input", "OTP modal", "Confirm button"],
+          thirdPartyApis: ["SMS Gateway - OTP"],
+          internalApis: ["POST /api/withdrawals/request", "POST /api/withdrawals/verify-otp"],
+          ref: "Withdrawal Flow"
+        },
+        {
+          name: "Profile",
+          path: "/influencer/profile",
+          fields: ["Name", "Email", "Username", "Bio", "Picture", "Phone", "UPI ID"],
+          components: ["Profile form", "Connected accounts", "Disconnect buttons", "Statistics"],
+          thirdPartyApis: ["Instagram API - Refresh", "YouTube API - Refresh"],
+          internalApis: ["GET /api/influencer/profile", "PUT /api/influencer/profile"],
+          ref: "Profile management"
+        }
+      ]
+    },
+    runner: {
+      name: "📊 Campaign Runner",
+      icon: "🎯",
+      pages: [
+        {
+          name: "Dashboard",
+          path: "/runner/dashboard",
+          fields: [],
+          components: ["Stats cards (Campaigns, Spend, Views, Pending)", "Active campaigns", "Performance chart", "Activity feed"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/runner/dashboard", "GET /api/runner/campaigns/active"],
+          ref: "Campaign Runner Features"
+        },
+        {
+          name: "Create Campaign",
+          path: "/runner/campaigns/create",
+          fields: ["Type (UGC/Clipping)", "Platform", "Title", "Category", "Description", "Banner", "Pay rate", "Budget", "Dates", "Guidelines", "Hashtags", "Source content", "Agency cap"],
+          components: ["Step wizard", "Form with validation", "Rich text editor", "Media upload", "Budget calculator"],
+          thirdPartyApis: [],
+          internalApis: ["POST /api/campaigns/create", "POST /api/upload/campaign-media"],
+          ref: "Campaign Creation Flow"
+        },
+        {
+          name: "My Campaigns",
+          path: "/runner/campaigns",
+          fields: ["Status filter", "Search", "Sort by"],
+          components: ["Filter bar", "Campaign cards/table", "Status badges", "Actions menu", "Pagination"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/runner/campaigns", "PUT /api/campaigns/{id}/status"],
+          ref: "Campaign history"
+        },
+        {
+          name: "Campaign Analytics",
+          path: "/runner/campaigns/:id",
+          fields: [],
+          components: ["Header", "Stats cards", "Budget bar", "Submissions tabs", "Performance chart", "Leaderboard", "Actions"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/campaigns/{id}/analytics", "GET /api/campaigns/{id}/submissions"],
+          ref: "Campaign analytics"
+        },
+        {
+          name: "Submission Queue",
+          path: "/runner/campaigns/:id/submissions",
+          fields: ["Status tabs", "Search"],
+          components: ["Submissions list", "Video embed", "Influencer info", "Stats", "Review checklist", "Approve/Reject buttons"],
+          thirdPartyApis: ["Instagram Graph API - Real-time metrics", "YouTube Data API - Real-time metrics"],
+          internalApis: ["GET /api/campaigns/{id}/submissions/pending", "POST /api/submissions/{id}/approve"],
+          ref: "Approval Workflow"
+        },
+        {
+          name: "Profile",
+          path: "/runner/profile",
+          fields: ["Company name", "Contact person", "Email", "Phone", "GST", "Logo", "Address", "Website"],
+          components: ["Profile form", "Logo upload", "Statistics"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/runner/profile", "PUT /api/runner/profile"],
+          ref: "Campaign Runner Registration"
+        }
+      ]
+    },
+    admin: {
+      name: "⚙️ Admin Panel",
+      icon: "🛡️",
+      pages: [
+        {
+          name: "Dashboard",
+          path: "/admin/dashboard",
+          fields: ["Date range"],
+          components: ["Metrics cards (DAU/WAU/MAU)", "Growth charts", "Revenue chart", "Alerts panel", "Quick actions"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/admin/analytics/overview", "GET /api/admin/alerts"],
+          ref: "Platform Analytics Dashboard"
+        },
+        {
+          name: "User Management",
+          path: "/admin/users",
+          fields: ["Search", "Role filter", "Status filter", "Date range"],
+          components: ["Filter bar", "Users table", "Actions menu (View/Suspend/Ban)", "User modal", "Bulk actions"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/admin/users", "PUT /api/admin/users/{id}/status"],
+          ref: "Admin Panel - User Management"
+        },
+        {
+          name: "Campaign Management",
+          path: "/admin/campaigns",
+          fields: ["Search", "Status filter", "Category filter", "Date range"],
+          components: ["Filter bar", "Campaigns table", "Actions menu", "Campaign modal"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/admin/campaigns", "PUT /api/admin/campaigns/{id}"],
+          ref: "Campaign Management"
+        },
+        {
+          name: "Content Moderation",
+          path: "/admin/submissions/flagged",
+          fields: ["Status filter", "Reason filter", "Campaign filter"],
+          components: ["Flagged submissions list", "Video embed", "Fraud indicators", "Actions (Approve/Reject/Ban)", "Notes"],
+          thirdPartyApis: ["Instagram Graph API - Detailed metrics", "YouTube Analytics API - Retention"],
+          internalApis: ["GET /api/admin/submissions/flagged", "POST /api/admin/submissions/{id}/approve"],
+          ref: "Content Moderation, Fraud Prevention"
+        },
+        {
+          name: "Withdrawal Management",
+          path: "/admin/withdrawals",
+          fields: ["Status filter", "Search", "Date/Amount range"],
+          components: ["Withdrawals table", "Actions (Approve/Reject/Process)", "Bulk approve", "Transaction modal", "Reject modal"],
+          thirdPartyApis: ["Razorpay Payout API"],
+          internalApis: ["GET /api/admin/withdrawals", "PUT /api/admin/withdrawals/{id}/approve"],
+          ref: "Payments & Payouts"
+        },
+        {
+          name: "Platform Analytics",
+          path: "/admin/analytics",
+          fields: ["Date range", "Metric selection", "Export format"],
+          components: ["Summary cards", "Activity charts", "Revenue breakdown", "Top performers", "Fraud stats", "Export button"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/admin/analytics/summary", "GET /api/admin/analytics/export"],
+          ref: "Admin Analytics Dashboard"
+        },
+        {
+          name: "Platform Settings",
+          path: "/admin/settings",
+          fields: ["Pay rate", "Min withdrawal", "First payout", "Min views", "Fraud thresholds", "Commission %", "Auto-pause %"],
+          components: ["Settings sections", "Input fields", "Toggles", "Threshold sliders", "Audit log"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/admin/settings", "PUT /api/admin/settings"],
+          ref: "Meeting notes - earnings, bot detection"
+        }
+      ]
+    },
+    background: {
+      name: "⚡ Background Services",
+      icon: "⚙️",
+      pages: [
+        {
+          name: "View Tracking Job",
+          path: "Cron (Hourly)",
+          fields: [],
+          components: ["Scheduler", "Queue processor", "Error handler", "Retry logic"],
+          thirdPartyApis: ["Instagram Graph API - GET insights (views/reach/likes/comments/shares/saves)", "YouTube Data API - GET videos statistics", "YouTube Analytics API - GET reports (views/likes/comments/shares)"],
+          internalApis: ["GET /api/submissions/active", "PUT /api/submissions/{id}/update-stats", "PUT /api/campaigns/{id}/update-budget"],
+          ref: "View Tracking, API Integration"
+        },
+        {
+          name: "Fraud Detection Job",
+          path: "Cron (Every 4 hours)",
+          fields: [],
+          components: ["Fraud analyzer", "Pattern matcher", "Threshold validator", "Flagging system"],
+          thirdPartyApis: ["Instagram Graph API - Engagement metrics", "YouTube Analytics API - audienceWatchRatio/retention"],
+          internalApis: ["GET /api/submissions/analyze", "POST /api/submissions/{id}/flag", "POST /api/admin/notifications/fraud"],
+          ref: "Bot & Fraud Detection, Phase 2"
+        },
+        {
+          name: "Budget Monitor Job",
+          path: "Cron (Every hour)",
+          fields: [],
+          components: ["Budget checker", "Alert system", "Auto-pause trigger"],
+          thirdPartyApis: [],
+          internalApis: ["GET /api/campaigns/check-budgets", "PUT /api/campaigns/{id}/pause", "POST /api/notifications/budget-warning"],
+          ref: "Campaign Budget Management"
+        },
+        {
+          name: "Email Notification Service",
+          path: "Queue processor",
+          fields: [],
+          components: ["Email queue", "Template renderer", "SMTP sender", "Delivery tracker"],
+          thirdPartyApis: ["SendGrid/AWS SES"],
+          internalApis: ["POST /api/notifications/send", "GET /api/notifications/status"],
+          ref: "Notifications section"
+        }
+      ]
+    }
+  };
+
+  const currentPages = pageData[selectedCategory]?.pages || [];
+
+  return (
+    <div className="w-full h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-lg">
+        <h1 className="text-3xl font-bold mb-2">ClipKaro Platform - Page Workflow</h1>
+        <p className="text-blue-100">Complete page specifications with fields, components, and API integrations</p>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <div className="w-80 bg-white border-r border-gray-200 overflow-y-auto">
+          <div className="p-4">
+            <h2 className="text-lg font-bold mb-4 text-gray-700">Categories</h2>
+            {Object.entries(pageData).map(([key, category]) => (
+              <button
+                key={key}
+                onClick={() => {
+                  setSelectedCategory(key);
+                  setSelectedPage(null);
+                }}
+                className={`w-full text-left p-3 rounded-lg mb-2 transition-all ${
+                  selectedCategory === key
+                    ? 'bg-blue-100 border-2 border-blue-500 text-blue-700'
+                    : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{category.icon}</span>
+                  <span className="font-semibold">{category.name}</span>
+                </div>
+                <div className="text-xs text-gray-500 mt-1 ml-10">
+                  {category.pages.length} page{category.pages.length !== 1 ? 's' : ''}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {!selectedPage ? (
+            <div>
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">
+                {pageData[selectedCategory]?.name}
+              </h2>
+              <div className="grid gap-4">
+                {currentPages.map((page, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => setSelectedPage(page)}
+                    className="bg-white rounded-lg shadow-md p-5 hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400"
+                  >
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">{page.name}</h3>
+                    <p className="text-sm text-gray-600 mb-3 font-mono bg-gray-100 px-2 py-1 rounded inline-block">
+                      {page.path}
+                    </p>
+                    <div className="flex gap-4 text-sm text-gray-600">
+                      <span>📝 {page.fields.length} fields</span>
+                      <span>🎨 {page.components.length} components</span>
+                      <span>🔌 {page.thirdPartyApis.length + page.internalApis.length} APIs</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-lg">
+              {/* Page Header */}
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-t-lg">
+                <button
+                  onClick={() => setSelectedPage(null)}
+                  className="text-white hover:text-blue-100 mb-3 flex items-center gap-2"
+                >
+                  ← Back to list
+                </button>
+                <h2 className="text-3xl font-bold mb-2">{selectedPage.name}</h2>
+                <p className="text-blue-100 font-mono">{selectedPage.path}</p>
+              </div>
+
+              <div className="p-6">
+                {/* Fields Section */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                      {selectedPage.fields.length}
+                    </span>
+                    Form Fields & Inputs
+                  </h3>
+                  {selectedPage.fields.length > 0 ? (
+                    <ul className="space-y-2">
+                      {selectedPage.fields.map((field, idx) => (
+                        <li key={idx} className="flex items-start gap-2 bg-green-50 p-3 rounded-lg border border-green-200">
+                          <span className="text-green-600 font-bold">•</span>
+                          <span className="text-gray-700">{field}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500 italic bg-gray-50 p-4 rounded-lg">No input fields (Display-only page)</p>
+                  )}
+                </div>
+
+                {/* Components Section */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+                    <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">
+                      {selectedPage.components.length}
+                    </span>
+                    UI Components
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {selectedPage.components.map((comp, idx) => (
+                      <div key={idx} className="bg-purple-50 p-3 rounded-lg border border-purple-200 flex items-center gap-2">
+                        <span className="text-purple-600">▸</span>
+                        <span className="text-gray-700">{comp}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Third Party APIs */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+                      {selectedPage.thirdPartyApis.length}
+                    </span>
+                    Third-Party APIs
+                  </h3>
+                  {selectedPage.thirdPartyApis.length > 0 ? (
+                    <div className="space-y-2">
+                      {selectedPage.thirdPartyApis.map((api, idx) => (
+                        <div key={idx} className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                          <p className="text-gray-800 font-mono text-sm">{api}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 italic bg-gray-50 p-4 rounded-lg">No third-party API integrations</p>
+                  )}
+                </div>
+
+                {/* Internal APIs */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+                    <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm">
+                      {selectedPage.internalApis.length}
+                    </span>
+                    Internal APIs (Backend)
+                  </h3>
+                  <div className="space-y-2">
+                    {selectedPage.internalApis.map((api, idx) => (
+                      <div key={idx} className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+                        <p className="text-gray-800 font-mono text-sm">{api}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Reference */}
+                {/*<div className="bg-gray-100 p-4 rounded-lg border border-gray-300">
+                  <h4 className="font-bold text-gray-700 mb-2">📄 Document Reference:</h4>
+                  <p className="text-gray-600 text-sm">{selectedPage.ref}</p>
+                </div>*/}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PageFlowchart;
