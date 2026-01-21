@@ -43,8 +43,8 @@
                   name: "Sign Up",
                   path: "/signup",
                   fields: ["Email", "Password", "Confirm password", "Role selection", "T&C checkbox"],
-                  components: ["Email/password form", "Google OAuth button", "Instagram OAuth button", "Role toggle", "Password strength"],
-                  thirdPartyApis: ["Google OAuth 2.0", "Instagram OAuth"],
+                  components: ["Email/password form", "Google OAuth button", "Role toggle", "Password strength"],
+                  thirdPartyApis: ["Google OAuth 2.0"],
                   internalApis: ["POST /api/auth/signup", "POST /api/auth/send-verification"],
                   ref: "User Registration Flow"
                 },
@@ -53,7 +53,7 @@
                   path: "/login",
                   fields: ["Email", "Password", "Remember me"],
                   components: ["Login form", "OAuth buttons", "Forgot password link"],
-                  thirdPartyApis: ["Google OAuth", "Instagram OAuth"],
+                  thirdPartyApis: ["Google OAuth"],
                   internalApis: ["POST /api/auth/login", "POST /api/auth/refresh-token"],
                   ref: "Authentication & Users"
                 },
